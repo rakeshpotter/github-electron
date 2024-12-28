@@ -139,6 +139,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
     let canOpen = true
     let disabled = false
     let tooltip: string
+    let descJsx: JSX.Element | null = null
 
     if (this.props.currentPullRequest) {
       icon = octicons.gitPullRequest
@@ -160,6 +161,19 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       description = 'Detached HEAD'
     } else if (tip.kind === TipState.Valid) {
       title = tooltip = tip.branch.name
+      descJsx = (
+        <div className="text">
+          {description}
+          <div>
+            <b style={{ color: 'var(--text-color)' }}>
+              {tip.branch.tip.sha.substring(0, 8)}
+            </b>
+            <span className="commit-branch-separator">
+              {tip.branch.tip.sha.substring(8)}
+            </span>
+          </div>
+        </div>
+      )
     } else {
       return assertNever(tip, `Unknown tip state: ${tipKind}`)
     }
@@ -249,7 +263,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
             icon={icon}
             iconClassName={iconClassName}
             title={title}
-            description={description}
+            description={descJsx || description}
             foldoutStyleOverrides={foldoutStyleOverrides}
             onContextMenu={this.onBranchToolbarButtonContextMenu}
             tooltip={isOpen ? undefined : tooltip}
